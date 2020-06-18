@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            var x=document.createElement("TABLE");
+            function sudoko_solver(i,j,sud){
+                var res=[[5,3,4,6,7,8,9,1,2],[6,7,2,1,9,5,3,4,8],[1,9,8,3,4,2,5,6,7],[8,5,9,7,6,1,4,2,3],[4,2,6,8,5,3,7,9,1],[7,1,3,9,2,4,8,5,6],[9,6,1,5,3,7,2,8,4],[2,8,7,4,1,9,6,3,5],[3,4,5,2,8,6,1,7,9]];
+                return res; 
+            }
+            function sudoko(){
+                var sud=[[5,3,0,0,7,0,0,0,0],[6,0,0,1,9,5,0,0,0],[0,9,8,0,0,0,0,6,0],[8,0,0,0,6,0,0,0,3],[4,0,0,8,0,3,0,0,1],[7,0,0,0,2,0,0,0,6],[0,6,0,0,0,0,2,8,0],[0,0,0,4,1,9,0,0,5],[0,0,0,0,8,0,0,7,9]];
+                return sud;
+            }
+            function check(){
+                var result=sudoko_solver(0,0,sud);
+                var sud=sudoko();
+                var sud1=document.getElementById("mytable");
+                var x=0;
+                for(var i=0 ; i<9 ; i++){
+                    for(var j=0 ; j<9 ; j++){
+                        if(sud[i][j]==0){
+                            var p=document.getElementById("v"+i+j);
+                            if(p.value!=result[i][j]){
+                                document.getElementById("x"+i+j).style.backgroundColor="#FFB6C1";
+                                document.getElementById("v"+i+j).style.backgroundColor="#FFB6C1";
+                                x=5;
+                            }
+                            else{
+                                document.getElementById("x"+i+j).style.backgroundColor="#98FB98";
+                                document.getElementById("v"+i+j).style.backgroundColor="#98FB98";
+                            }
+                        }
+                    }
+                }
+                if(x==5) return false;
+                else return true;
+            }
+
+            function make_sud(){
+                var sud=sudoko();
+                x.setAttribute("id","mytable");
+                document.body.appendChild(x);
+                for(var i=0 ; i<9 ; i++){
+                    var y=document.createElement("TR");
+                    y.setAttribute("id","a"+i);
+                    document.getElementById("mytable").appendChild(y);
+                    for(var j=0 ; j<9 ; j++){
+                        var z=document.createElement("TD");
+                        z.setAttribute("id","x"+i+j);
+                        if(sud[i][j]==0){
+                            document.getElementById("a"+i).appendChild(z);
+                            var t=document.createElement("INPUT");
+                            t.setAttribute("type","text");
+                            t.setAttribute("id","v"+i+j);
+                            document.getElementById("x"+i+j).appendChild(t);
+                        }
+                        else{
+                            var t=document.createTextNode(sud[i][j]);
+                            z.appendChild(t);
+                            document.getElementById("a"+i).appendChild(z);
+                        }
+                    } 
+                }
+                var but=document.createElement("button");
+                but.setAttribute("type","submit");
+                but.setAttribute("onclick","return check()");
+                but.setAttribute("id","sub_but");
+                but.setAttribute("object-position","center");
+                document.body.appendChild(but);
+                document.getElementById("sub_but").innerHTML="Submit";
+            }
+        </script>
+        <style>
+            table {
+                margin:1em auto;
+                border-collapse: collapse;
+            }
+            td {
+                height:30px;
+                width:30px;
+                border:1px solid;
+                text-align:center;
+            }
+            td:first-child {
+                border-left:solid;
+            }
+            td:nth-child(3n) {
+                border-right:solid ;
+            }
+            tr:first-child td {
+                border-top:solid;
+            }
+            tr:nth-child(3n) td {
+                border-bottom:solid ;
+            }
+            input{ 
+                width: 30px;
+                height: 30px;
+                border: 0px solid green;
+                padding: 0px;
+                margin: 0px;
+                text-align:center;
+            }
+        </style>
+    </head> 
+    <body>
+        <br>
+        <button onclick="make_sud()">Generate Sudoko</button>
+        <br><br>
+    </body>  
+</html>
