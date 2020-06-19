@@ -140,10 +140,9 @@
             }
             
             function sudoko(){
-                var sud=Generate(2);
+                var sud=Generate(70);
                 g_sud1=sud;
                 return sud;
-                //var sud[9][9];
             }
 
             function sudoko_solver(){
@@ -153,7 +152,6 @@
 
             function check(){
                 var result=sudoko_solver();
-                //var sud1=document.getElementById("mytable");
                 var x=0;
                 for(var i=0 ; i<9 ; i++){
                     for(var j=0 ; j<9 ; j++){
