@@ -1,184 +1,543 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script>
-            var globalSudoku;
-            var g_sud1;
+	<head>
+		<script>
+			var globalSudoku;
+			var g_sud1;
 
-            function shuffle(array) {
-                array.sort(() => Math.random() - 0.5);
-            }
+			var slider = document.getElementById("myRange");
+			var output = document.getElementById("demo");
+			output.innerHTML = slider.value;
 
-            function toOneD(row,col){
-                return 9*row+col;
-            }
+			slider.oninput = function() {
+				output.innerHTML = this.value;
+			}
 
-            function toTwoD(idx){
-                var row;
-                var col;
-                row=Math.floor(idx/9);
-                col=idx%9;
-                var coordinates=[row,col];
-                return coordinates;
-            }
+			function shuffle(array) {
+				array.sort(() => Math.random() - 0.5);
+			}
 
-            function initialize(){
-                var newSudoku=new Array(9);
-                globalSudoku=new Array(9);
-                for(var i=0;i<9;i++){
-                    newSudoku[i]=new Array(9);
-                    globalSudoku[i]=new Array(9);
-                    for(var j=0;j<9;j++){
-                        newSudoku[i][j]=0;
-                    }
-                }
-                return newSudoku;
-            }
+			function toOneD(row,col){
+				return 9*row+col;
+			}
 
-            function search(avail,target){
-                var x=avail.length;
-                var start=0;
-                var end=x-1;
-                while(start<=end){
-                    var mid = Math.floor((start+end)/2);
-                    if(avail[mid]==target){
-                        return mid;
-                    }
-                    else if(avail[mid]>target){
-                        end=mid-1;
-                    }
-                    else{
-                        start=mid+1;
-                    }
-                }
-                return -1;
-            }
+			function toTwoD(idx){
+				var row;
+				var col;
+				row=Math.floor(idx/9);
+				col=idx%9;
+				var coordinates=[row,col];
+				return coordinates;
+			}
 
-            function getavail(row,col,sud,avail){
-                for(var i=0;i<9;i++){
-                    if(i!=row){
-                        var t=search(avail,sud[i][col]);
-                        if(t!=-1){
-                            avail.splice(t,1);
-                        }
-                    }
-                }
-                for(var i=0;i<9;i++){
-                    if(i!=col){
-                        var t=search(avail,sud[row][i]);
-                        if(t!=-1){
-                            avail.splice(t,1);
-                        }
-                    }
-                }
-                var row_x=3*Math.floor(row/3);
-                var row_y=3*Math.floor(col/3);
-                for(var i=row_x;i<row_x+3;i++){
-                    for(var j=row_y;j<row_y+3;j++){
-                        if(!(i==row&&j==col)){
-                            var t=search(avail,sud[i][j]);
-                            if(t!=-1){
-                                avail.splice(t,1);
-                            }
-                        }
-                    }
-                }
-            }
+			function initialize(){
+				var newSudoku=new Array(9);
+				globalSudoku=new Array(9);
+				for(var i=0;i<9;i++){
+					newSudoku[i]=new Array(9);
+					globalSudoku[i]=new Array(9);
+					for(var j=0;j<9;j++){
+						newSudoku[i][j]=0;
+					}
+				}
+				return newSudoku;
+			}
 
-            function helper(row,col,sud){
-                if(row==9) return true;
-                if(col==9) return helper(row+1,0,sud);
-                var avail=[1,2,3,4,5,6,7,8,9];
-                getavail(row,col,sud,avail);
-                shuffle(avail);
-                var x=avail.length;
-                for(var y=0;y<x;y++){
-                    sud[row][col]=avail[y];
-                    if(helper(row,col+1,sud)==true){
-                        return true;
-                    }
-                }
-                return false;
-            }
+			function search(avail,target){
+				var x=avail.length;
+				var start=0;
+				var end=x-1;
+				while(start<=end){
+					var mid = Math.floor((start+end)/2);
+					if(avail[mid]==target){
+						return mid;
+					}
+					else if(avail[mid]>target){
+						end=mid-1;
+					}
+					else{
+						start=mid+1;
+					}
+				}
+				return -1;
+			}
 
-            function sampleSudoku(k,sudokuTemp){
-                var reservoir=new Array(k);
-                var temp=new Array(81);
-                for(var i=0;i<81;i++){
-                    temp[i]=i;
-                }
-                for(var i=0;i<k;i++){
-                    reservoir[i]=temp[i];
-                }
-                for(var i=k;i<81;i++){
-                    var j=Math.floor(i*Math.random());
-                    if(j<=k){
-                        reservoir[j]=temp[i];
-                    }
-                }
-                for(var i=0;i<k;i++){
-                    var coordinates=toTwoD(reservoir[i]);
-                    sudokuTemp[coordinates[0]][coordinates[1]]=0;
-                }
-                return sudokuTemp;
-            }
+			function getavail(row,col,sud,avail){
+				for(var i=0;i<9;i++){
+					if(i!=row){
+						var t=search(avail,sud[i][col]);
+						if(t!=-1){
+							avail.splice(t,1);
+						}
+					}
+				}
+				for(var i=0;i<9;i++){
+					if(i!=col){
+						var t=search(avail,sud[row][i]);
+						if(t!=-1){
+							avail.splice(t,1);
+						}
+					}
+				}
+				var row_x=3*Math.floor(row/3);
+				var row_y=3*Math.floor(col/3);
+				for(var i=row_x;i<row_x+3;i++){
+					for(var j=row_y;j<row_y+3;j++){
+						if(!(i==row&&j==col)){
+							var t=search(avail,sud[i][j]);
+							if(t!=-1){
+								avail.splice(t,1);
+							}
+						}
+					}
+				}
+			}
 
-            function Generate(k){
-                var sudoku = initialize();
-                var sampledSudoku;
-                while(helper(0,0,sudoku)==false){
-                    sudoku = initialize();
-                }
-                for(var i=0;i<9;i++){
-                    for(var j=0;j<9;j++){
-                        globalSudoku[i][j]=sudoku[i][j];
-                    }
-                }
+			function helper(row,col,sud){
+				if(row==9) return true;
+				if(col==9) return helper(row+1,0,sud);
+				var avail=[1,2,3,4,5,6,7,8,9];
+				getavail(row,col,sud,avail);
+				shuffle(avail);
+				var x=avail.length;
+				for(var y=0;y<x;y++){
+					sud[row][col]=avail[y];
+					if(helper(row,col+1,sud)==true){
+						return true;
+					}
+				}
+				return false;
+			}
 
-                sampledSudoku=sampleSudoku(k,sudoku);
-                return sampledSudoku;
-            }
-            
-            function sudoko(){
-                var sud=Generate(70);
-                g_sud1=sud;
-                return sud;
-            }
+			function sampleSudoku(k,sudokuTemp){
+				var reservoir=new Array(k);
+				var temp=new Array(81);
+				for(var i=0;i<81;i++){
+					temp[i]=i;
+				}
+				for(var i=0;i<k;i++){
+					reservoir[i]=temp[i];
+				}
+				for(var i=k;i<81;i++){
+					var j=Math.floor(i*Math.random());
+					if(j<=k){
+						reservoir[j]=temp[i];
+					}
+				}
+				for(var i=0;i<k;i++){
+					var coordinates=toTwoD(reservoir[i]);
+					sudokuTemp[coordinates[0]][coordinates[1]]=0;
+				}
+				return sudokuTemp;
+			}
 
-            function sudoko_solver(){
-                var res=globalSudoku;
-                return res; 
-            }
+			function Generate(k){
+				var sudoku = initialize();
+				var sampledSudoku;
+				while(helper(0,0,sudoku)==false){
+					sudoku = initialize();
+				}
+				for(var i=0;i<9;i++){
+					for(var j=0;j<9;j++){
+						globalSudoku[i][j]=sudoku[i][j];
+					}
+				}
 
-            function check(){
-                var result=sudoko_solver();
-                var x=0;
-                for(var i=0 ; i<9 ; i++){
-                    for(var j=0 ; j<9 ; j++){
-                        if(g_sud1[i][j]==0){
-                            var p=document.getElementById("v"+i+j);
-                            if(p.value!=result[i][j]){
-                                document.getElementById("x"+i+j).style.backgroundColor="#f5bcba";
-                                document.getElementById("v"+i+j).style.backgroundColor="#f5bcba";
-                                x=5;
-                            }
-                            else{
-                                document.getElementById("x"+i+j).style.backgroundColor="rgba(222, 237, 243, 0.575)";
-                                document.getElementById("v"+i+j).style.backgroundColor="rgba(222, 237, 243, 0.575)";
-                            }
-                        }
-                    }
-                }
-                if(x==5) return false;
-                else{
-                    return true;
-                }   
-            }
+				sampledSudoku=sampleSudoku(k,sudoku);
+				return sampledSudoku;
 
-            function ref(){
-                location.reload();
-            }
+				/*document.write("<br><br>");
+				for(var i=0;i<9;i++){
+					for(var j=0;j<9;j++){
+						document.write(sampledSudoku[i][j]+"  ");
+					}
+					document.write("<br>");
+				}*/
+			}
+			
+			function sudoko(k){
+				var sud=Generate(k);
+				g_sud1=sud;
+				return sud;
+				//var sud[9][9];
+			}
 
+			function sudoko_solver(){
+				var res=globalSudoku;
+				return res;	
+			}
+
+			function check(){
+				var result=sudoko_solver();
+				//var sud1=document.getElementById("mytable");
+				var x=0;
+				for(var i=0 ; i<9 ; i++){
+					for(var j=0 ; j<9 ; j++){
+						if(g_sud1[i][j]==0){
+							var p=document.getElementById("v"+i+j);
+							if(p.value!=result[i][j]){
+								document.getElementById("x"+i+j).style.backgroundColor="#f5bcba";
+								document.getElementById("v"+i+j).style.backgroundColor="#f5bcba";
+								x=5;
+							}
+							else{
+								document.getElementById("x"+i+j).style.backgroundColor="rgba(222, 237, 243, 0.575)";
+								document.getElementById("v"+i+j).style.backgroundColor="rgba(222, 237, 243, 0.575)";
+							}
+						}
+					}
+				}
+				if(x==5) return false;
+				else{
+					document.getElementById("mymodal").style.display="block";
+					document.getElementById("rul2").style.display="none";
+					document.getElementById("rul3").style.display="block";
+					window.clearTimeout(ID);					
+					return true
+				}
+			}
+
+			function ref(){
+				//document.body.removeChild(document.getElementById("gen_sud"));
+				clr();
+				//st();
+				make_sud();
+				st();
+			}
+
+			function clr(){
+				document.body.removeChild(document.getElementById("mytable"));
+				document.body.removeChild(document.getElementById("sub_but"));
+				document.body.removeChild(document.getElementById("gen_antr"));
+				document.body.removeChild(document.getElementById("tim1"));
+				h=0,m=0,s=0;
+				window.clearTimeout(ID);
+			}
+
+			function make_sud(){
+				var tough=document.getElementById("toughness")
+				var slide=tough.value;
+				var hardness=43+5*(slide-1)+4*Math.floor(Math.random());
+				var sud=sudoko(hardness);
+				var x=document.createElement("TABLE");
+				x.setAttribute("id","mytable");
+				document.body.appendChild(x);
+				for(var i=0 ; i<9 ; i++){
+					var y=document.createElement("TR");
+					y.setAttribute("id","a"+i);
+					document.getElementById("mytable").appendChild(y);
+					for(var j=0 ; j<9 ; j++){
+						var z=document.createElement("TD");
+						z.setAttribute("id","x"+i+j);
+						if(sud[i][j]==0){
+							document.getElementById("a"+i).appendChild(z);
+							var t=document.createElement("INPUT");
+							t.setAttribute("type","number");
+							t.setAttribute("min","1");
+							t.setAttribute("max","9");
+							t.setAttribute("id","v"+i+j);
+							document.getElementById("x"+i+j).appendChild(t);
+						}
+						else{
+							var t=document.createTextNode(sud[i][j]);
+							z.appendChild(t);
+							document.getElementById("a"+i).appendChild(z);
+						}
+					} 
+				}
+				var but=document.createElement("button");
+				but.setAttribute("type","submit");
+				but.setAttribute("onclick","check()");
+				but.setAttribute("id","sub_but");
+				but.setAttribute("class","insud");
+				document.body.appendChild(but);
+				document.getElementById("sub_but").innerHTML="Submit";
+				//document.write("<br>");
+				var but_1=document.createElement("button");
+				but_1.setAttribute("onclick","ref()");
+				but_1.setAttribute("id","gen_antr");
+				but_1.setAttribute("class","insud");
+				document.body.appendChild(but_1);
+				document.getElementById("gen_antr").innerHTML="Refresh";
+				var par1=document.createElement("p");
+				par1.setAttribute("id","tim1");
+				document.body.appendChild(par1);
+				document.getElementById("tim1").innerHTML="00:00:00";
+			}						
+		</script>
+		<style>
+			body{
+				background-color: whitesmoke;
+			}
+			h1{
+				background-color:rgba(222, 237, 243, 0.575);
+				margin-top: -7.7px;
+				margin-left: -7.7px;
+				margin-right: -7.7px;
+				border: 2px solid rgb(147, 215, 255);
+				font-family: serif;
+				text-align: center;
+				font-size: 70px;
+			}
+			table {
+				margin-left: 300px;
+				border-collapse: collapse;
+				background-color:rgba(222, 237, 243, 0.575);
+				font-size: medium;
+			}
+			td {
+				height:50px;
+				width:50px;
+				border:1px solid;
+				text-align:center;
+				font-size: x-large;
+				font-weight: 1000;
+				font-family: serif;
+			}
+			td:first-child {
+				border-left: 3px solid;
+			}
+			td:nth-child(3n) {
+				border-right: 3px solid ;
+			}
+			tr:first-child td {
+				border-top: 3px solid;
+			}
+			tr:nth-child(3n) td {
+				border-bottom: 3px solid ;
+			}
+			but_group{
+				width:fit-content;
+			}
+			input{ 
+				width: 50px;
+				height: 50px;
+  				border: 0px solid green;
+  				padding: 0px;
+  				margin: 0px;
+				text-align:center;
+				font-family: serif;
+				font-size: x-large;
+				font-weight: 500;
+				background-color: white;
+			}
+			input::-webkit-outer-spin-button,
+			input::-webkit-inner-spin-button{
+				-webkit-appearance: none ;
+				margin: 0;
+			}
+			.insud{
+				width: 200px;
+				height: 50px;
+				font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+				font-size: 30px;
+				font-weight: bolder;
+				background-color: :rgba(222, 237, 243, 0.575);
+				border: 3px solid;
+				border-radius: 10px;
+				margin: 60px 20px 60px 50px;
+				/*margin-left: 50px;
+				margin-right: 0px;*/
+				border-color: rgb(147, 215, 255);
+			}
+			#mytable{
+				margin-bottom: 25px;
+			}
+			.modal{
+				display: block;
+				position: fixed;
+				z-index: 1;
+				padding-top: 100px ;
+				left: 0;
+				top: 0;
+				width: 100%; /* Full width */
+				height: 100%; /* Full height */
+				overflow: auto;
+				background-color: rgba(0,0, 0,0.3);
+			}
+			.modal_content{
+				background-color: rgb(250, 249, 249);
+				font-family: cursive;
+				margin: auto;
+  				padding: 30px;
+ 				border: 2px solid rgb(39, 27, 27);
+				height: 55%;
+				width: 50%;
+			}
+			.close {
+				color: #aaaaaa;
+				float: right;
+				font-size: 28px;
+				font-weight: bold;
+			}
+			.close:hover,
+			.close:focus {
+				color: #000;
+				text-decoration: none;
+				cursor: pointer;
+			}
+			.next{
+				height: 40px;
+				width: fit-content;
+				float: right;
+				background-color: rgb(105, 230, 167);
+				border: 1px solid black;
+				border-radius: 100px;
+				font-size: 20px;
+			}
+			#toughness{
+				height: 36px;
+				width: 50%;
+				border-radius: 3px;
+				background: #ffffff;
+				cursor: pointer;
+				margin-top: -14px; 
+				margin-left:200px;
+			}
+			#mytable,.insud,#tim1{
+				float: left;
+			}
+			#tim1{
+				background-color: whitesmoke;
+				font-size: 50px;
+				font-family: cursive;
+				margin-left: 150px;
+			}
+		</style>
+	</head>	
+	<body>
+		<h1>Sudoko Champ</h1>
+		<button id="diff1" class="insud" style="margin-top: -49.6px; margin-left: -8px; margin-right: -11px; ">Difficulty</button><br>
+		<div id="mymodal" class="modal">
+			<div class="modal_content" id="rul0">
+				<span class="close">&times;</span>
+				<p style="font-size: 15px; padding-top: 10px;">
+					Sudoku is played on a grid of 9 x 9 spaces. Within the rows and 
+					columns are 9 “squares” (made up of 3 x 3 spaces). Each row, column 
+					and square (9 spaces each) needs to be filled out with the 
+					numbers 1-9, without repeating any numbers within the row, column 
+					or square.
+				</p>
+				<img src="sud.png" style="padding-left: 300px; height: 215px; width: 150px;"><br>
+				<button id="next1" class="next">Next</button>
+			</div>
+			<div class="modal_content" id="rul1" style="display: none;">
+				<span class="close">&times;</span>
+				<p>Sudoku is played on a grid of 9 x 9 spaces. Within the rows and 
+					columns are 9 “squares” (made up of 3 x 3 spaces). Each row, column 
+					and square (9 spaces each) needs to be filled out with the 
+					numbers 1-9, without repeating any numbers within the row, column 
+					or square.</p>
+					<img src="sud1.png" style="padding-top: 25px; padding-left: 175px; height: 200px; width: 200px;">
+					<img src="sud2.png" style="height: 200px; width: 200px; float: inline-start;">
+					<br>
+					<button id="next2" class="next">Next</button>
+					<button id="prev1" class="next" style="margin-right: 10px;">Previous</button>
+			</div>
+			<div id="rul2" class="modal_content" style="display: none;">
+				<h2 style="text-align: center;"> Set Toughness of Sudoku </h3><br>
+				<input type="range" min="1" max="4" value="1" class="slider" id="toughness" step="1" width="100%"><br><br><br><br><br>
+				<button class="next" id="gen_sud">Start Sudoko</button>
+				<button id="prev2" class="next" style="margin-right: 10px;">Previous</button>
+			</div>
+			<div id="rul3" class="modal_content" style="display: none;">
+				<span class="close">&times;</span>
+				<h2 style="text-align: center;">Congratulations!</h2>
+				<img src="success.png" style="padding-top: 25px; padding-left: 280px; height: 200px; width: 200px;"><br>
+				<button id="prev3" class="next">Play Again</button>
+			</div>
+		</div>
+		<!--<div class="slidecontainer">
+			<input type="range" min="1" max="4" value="1" class="slider" id="toughness" step="1">
+		</div>
+
+		<button class="insud" id="gen_sud" onclick="make_sud()">Generate Sudoko</button>
+		<br><br>-->
+	</body>	
+	<script>
+		var modal = document.getElementById("mymodal");
+			var span = document.getElementsByClassName("close");
+			span[0].onclick = function() {
+				document.getElementById("rul0").style.display = "none";
+				document.getElementById("rul2").style.display="block";
+			}
+			/*window.onclick = function(event) {
+				if (event.target == modal) {
+					modal.style.display = "none";
+					document.getElementById("rul2").style.display="block";
+				}
+			}*/
+			var btn=document.getElementById("next1");
+			var rul0=document.getElementById("rul0");
+			var rul1=document.getElementById("rul1");
+			btn.onclick= function(){
+				rul0.style.display="none";
+				rul1.style.display="block";
+				span[1].onclick = function() {
+					rul1.style.display="none";
+					document.getElementById("rul2").style.display="block";
+				}
+			}
+			var btn1=document.getElementById("next2");
+			var rul2=document.getElementById("rul2");
+			btn1.onclick=function(){
+				rul1.style.display="none";
+				rul2.style.display="block";
+			}
+			var btn2=document.getElementById("prev1");
+			btn2.onclick=function(){
+				rul1.style.display="none";
+				rul0.style.display="block";
+			}
+			var btn3=document.getElementById("prev2");
+			btn3.onclick=function(){
+				rul2.style.display="none";
+				rul1.style.display="block";
+			}
+			var btn4=document.getElementById("prev3");
+			var rul3=document.getElementById("rul3");
+			btn4.onclick=function(){
+				rul3.style.display="none";
+				rul2.style.display="block";
+				clr();
+			}
+			var btn5=document.getElementById("diff1");
+			btn5.onclick=function(){
+				modal.style.display="block";
+				rul2.style.display="block";
+				clr();
+			}
+			span[2].onclick=function(){
+				modal.style.display="none";
+			}
+			var f_btn=document.getElementById("gen_sud");
+			f_btn.onclick=function(){
+				modal.style.display="none";
+				st();
+				return make_sud();
+			}
+			var ID=0;
+			var h=0;
+			var m=0;
+			var s=0;	
+			function timer1(){
+				s++;
+				if(s==60){
+					m++;
+					s=0;
+				}
+				if(m==60){
+					h++;
+					m=0;
+				}
+				document.getElementById("tim1").innerHTML=(h<10 ? "0":"")+h+":"+(m<10 ? "0":"")+m+":"+(s<10 ? "0":"")+s;
+			}
+			function st(){
+				ID=window.setInterval(timer1,1000);
+			}
+	</script> 
+</html>
+=======
             function make_sud(){
                 var sud=sudoko();
                 var x=document.createElement("TABLE");
